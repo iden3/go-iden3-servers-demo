@@ -36,7 +36,7 @@ func handleClaimRequest(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Requests.Add()", err)
 		return
 	}
-	c.JSON(400, messages.ClaimRequestRes{
+	c.JSON(200, messages.ClaimRequestRes{
 		Id: id,
 	})
 }
@@ -75,7 +75,7 @@ func handleClaimCredential(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Issuer.GenCredentialExistence()", err)
 		return
 	}
-	c.JSON(400, messages.ClaimCredentialRes{
+	c.JSON(200, messages.ClaimCredentialRes{
 		Status:     status,
 		Credential: credential,
 	})
