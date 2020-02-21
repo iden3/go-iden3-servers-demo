@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/iden3/go-iden3-core/core/claims"
 	"github.com/iden3/go-iden3-core/identity/issuer"
+	"github.com/iden3/go-iden3-core/merkletree"
 	"github.com/iden3/go-iden3-servers-demo/servers/issuerdemo/messages"
 	"github.com/iden3/go-iden3-servers/handlers"
 	"gopkg.in/go-playground/validator.v9"
@@ -78,6 +79,30 @@ func handleClaimCredential(c *gin.Context, srv *Server) {
 		Status:     status,
 		Credential: credential,
 	})
+}
+
+func _handleGetIdenPublicData(c *gin.Context, srv *Server, state *merkletree.Hash) {
+	data, err := srv.IdenPubOffChainWriteHttp.GetPublicData(state)
+	if err != nil {
+		handlers.Fail(c, "IdenPubOffChainWriteHttp.GetPublicData()", err)
+		return
+	}
+	c.JSON(200, data)
+}
+
+func handleGetIdenPublicData(c *gin.Context, srv *Server) {
+	_handleGetIdenPublicData(c, srv, nil)
+}
+
+func handleGetIdenPublicDataState(c *gin.Context, srv *Server) {
+	var uri struct {
+		State *merkletree.Hash `uri:"state"`
+	}
+	if err := c.ShouldBindUri(&uri); err != nil {
+		handlers.Fail(c, "cannot validate uri", err)
+		return
+	}
+	_handleGetIdenPublicData(c, srv, uri.State)
 }
 
 //
