@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/iden3/go-iden3-core/core/claims"
 	"github.com/iden3/go-iden3-core/identity/issuer"
+	"github.com/iden3/go-iden3-core/merkletree"
 	"github.com/iden3/go-iden3-servers-demo/servers/issuerdemo/messages"
 	"github.com/iden3/go-iden3-servers/handlers"
 	"gopkg.in/go-playground/validator.v9"
@@ -26,7 +27,7 @@ func ShouldBindJSONValidate(c *gin.Context, v interface{}) error {
 //
 
 func handleClaimRequest(c *gin.Context, srv *Server) {
-	var req messages.ClaimRequestReq
+	var req messages.ReqClaimRequest
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
 		return
 	}
@@ -35,7 +36,7 @@ func handleClaimRequest(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Requests.Add()", err)
 		return
 	}
-	c.JSON(400, messages.ClaimRequestRes{
+	c.JSON(200, messages.ResClaimRequest{
 		Id: id,
 	})
 }
@@ -53,14 +54,14 @@ func handleClaimStatus(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Requests.Get()", err)
 		return
 	}
-	c.JSON(200, messages.ClaimStatusRes{
+	c.JSON(200, messages.ResClaimStatus{
 		Status: request.Status,
 		Claim:  request.Claim,
 	})
 }
 
 func handleClaimCredential(c *gin.Context, srv *Server) {
-	var req messages.ClaimCredentialReq
+	var req messages.ReqClaimCredential
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
 		return
 	}
@@ -74,10 +75,34 @@ func handleClaimCredential(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Issuer.GenCredentialExistence()", err)
 		return
 	}
-	c.JSON(400, messages.ClaimCredentialRes{
+	c.JSON(200, messages.ResClaimCredential{
 		Status:     status,
 		Credential: credential,
 	})
+}
+
+func _handleGetIdenPublicData(c *gin.Context, srv *Server, state *merkletree.Hash) {
+	data, err := srv.IdenPubOffChainWriteHttp.GetPublicData(state)
+	if err != nil {
+		handlers.Fail(c, "IdenPubOffChainWriteHttp.GetPublicData()", err)
+		return
+	}
+	c.JSON(200, data)
+}
+
+func handleGetIdenPublicData(c *gin.Context, srv *Server) {
+	_handleGetIdenPublicData(c, srv, nil)
+}
+
+func handleGetIdenPublicDataState(c *gin.Context, srv *Server) {
+	var uri struct {
+		State *merkletree.Hash `uri:"state"`
+	}
+	if err := c.ShouldBindUri(&uri); err != nil {
+		handlers.Fail(c, "cannot validate uri", err)
+		return
+	}
+	_handleGetIdenPublicData(c, srv, uri.State)
 }
 
 //
@@ -90,7 +115,7 @@ func handleRequestsList(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Requests.List()", err)
 		return
 	}
-	c.JSON(200, messages.RequestListRes{
+	c.JSON(200, messages.ResRequestList{
 		Pending:  pending,
 		Approved: approved,
 		Rejected: rejected,
@@ -98,7 +123,7 @@ func handleRequestsList(c *gin.Context, srv *Server) {
 }
 
 func handleRequestsApprove(c *gin.Context, srv *Server) {
-	var req messages.RequestApproveReq
+	var req messages.ReqRequestApprove
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
 		return
 	}
