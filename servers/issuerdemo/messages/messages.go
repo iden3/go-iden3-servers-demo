@@ -24,30 +24,30 @@ type Request struct {
 	Claim  *merkletree.Entry `json:"-"`
 }
 
-type RequestListRes struct {
+type ResRequestList struct {
 	Pending  []Request `json:"pending" validate:"required"`
 	Approved []Request `json:"approved" validate:"required"`
 	Rejected []Request `json:"rejected" validate:"required"`
 }
 
-type RequestApproveReq struct {
+type ReqRequestApprove struct {
 	Id int `json:"id" validate:"required"`
 }
 
-type ClaimRequestReq struct {
+type ReqClaimRequest struct {
 	Value string `json:"value" validate:"required,min=1,max=80"`
 }
 
-type ClaimRequestRes struct {
+type ResClaimRequest struct {
 	Id int `json:"id" validate:"required"`
 }
 
-type ClaimStatusRes struct {
+type ResClaimStatus struct {
 	Status RequestStatus     `json:"status" validate:"required"`
 	Claim  *merkletree.Entry `json:"claim"`
 }
 
-type ClaimCredentialReq struct {
+type ReqClaimCredential struct {
 	Claim *merkletree.Entry `json:"claim" validate:"required"`
 }
 
@@ -58,7 +58,7 @@ const (
 	ClaimtStatusReady  ClaimStatus = "ready"
 )
 
-type ClaimCredentialRes struct {
+type ResClaimCredential struct {
 	Status     ClaimStatus                `json:"status" validate:"required"`
 	Credential *proof.CredentialExistence `json:"credential" validate:"required"`
 }

@@ -27,7 +27,7 @@ func ShouldBindJSONValidate(c *gin.Context, v interface{}) error {
 //
 
 func handleClaimRequest(c *gin.Context, srv *Server) {
-	var req messages.ClaimRequestReq
+	var req messages.ReqClaimRequest
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
 		return
 	}
@@ -36,7 +36,7 @@ func handleClaimRequest(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Requests.Add()", err)
 		return
 	}
-	c.JSON(200, messages.ClaimRequestRes{
+	c.JSON(200, messages.ResClaimRequest{
 		Id: id,
 	})
 }
@@ -54,14 +54,14 @@ func handleClaimStatus(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Requests.Get()", err)
 		return
 	}
-	c.JSON(200, messages.ClaimStatusRes{
+	c.JSON(200, messages.ResClaimStatus{
 		Status: request.Status,
 		Claim:  request.Claim,
 	})
 }
 
 func handleClaimCredential(c *gin.Context, srv *Server) {
-	var req messages.ClaimCredentialReq
+	var req messages.ReqClaimCredential
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
 		return
 	}
@@ -75,7 +75,7 @@ func handleClaimCredential(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Issuer.GenCredentialExistence()", err)
 		return
 	}
-	c.JSON(200, messages.ClaimCredentialRes{
+	c.JSON(200, messages.ResClaimCredential{
 		Status:     status,
 		Credential: credential,
 	})
@@ -115,7 +115,7 @@ func handleRequestsList(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "Requests.List()", err)
 		return
 	}
-	c.JSON(200, messages.RequestListRes{
+	c.JSON(200, messages.ResRequestList{
 		Pending:  pending,
 		Approved: approved,
 		Rejected: rejected,
@@ -123,7 +123,7 @@ func handleRequestsList(c *gin.Context, srv *Server) {
 }
 
 func handleRequestsApprove(c *gin.Context, srv *Server) {
-	var req messages.RequestApproveReq
+	var req messages.ReqRequestApprove
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
 		return
 	}
