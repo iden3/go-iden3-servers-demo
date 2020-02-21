@@ -4,35 +4,43 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
+	"crypto/rand"
 	"fmt"
-	"net/http"
+	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/iden3/go-iden3-core/components/httpclient"
 	"github.com/iden3/go-iden3-core/components/idenpuboffchain/readerhttp"
 	"github.com/iden3/go-iden3-core/components/idenpubonchain"
 	"github.com/iden3/go-iden3-core/core/claims"
-	"github.com/iden3/go-iden3-core/core/proof"
 	"github.com/iden3/go-iden3-core/db"
 	"github.com/iden3/go-iden3-core/eth"
 	"github.com/iden3/go-iden3-core/identity/holder"
 	"github.com/iden3/go-iden3-core/keystore"
-	"github.com/iden3/go-iden3-core/merkletree"
+	msgsIssuer "github.com/iden3/go-iden3-servers-demo/servers/issuerdemo/messages"
+	msgsVerifier "github.com/iden3/go-iden3-servers-demo/servers/verifier/messages"
+	"github.com/iden3/go-iden3-servers/config"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/go-playground/assert.v1"
 )
 
-var (
-	pass                 = []byte("test pass")
-	web3Url              = "http://127.0.0.1:8999"
-	idenStateContractHex = "0xF6a014Ac66bcdc1BF51ac0fa68DF3f17f4b3e574"
-	issuerUrl            = "http://127.0.0.1:3000/api/unstable"
-	verifierUrl          = "http://127.0.0.1:3001/api/unstable"
-)
+type ConfigServer struct {
+	Url string `validate:"required"`
+}
+
+type Config struct {
+	KeyStoreBaby config.KeyStore  `validate:"required"`
+	Web3         config.Web3      `validate:"required"`
+	Contracts    config.Contracts `validate:"required"`
+	Issuer       ConfigServer     `validate:"required"`
+	Verifier     ConfigServer     `validate:"required"`
+	Test         struct {
+		Loops    int             `validate:"required"`
+		LoopWait config.Duration `validate:"required"`
+	} `validate:"required"`
+}
 
 var integration bool
 
@@ -42,18 +50,32 @@ func init() {
 	}
 }
 
+func RandString(n int) string {
+	b := make([]byte, n/2+1)
+	rand.Read(b)
+	return fmt.Sprintf("%x", b)[:n]
+}
+
 func TestIntHolder(t *testing.T) {
 	if !integration {
 		t.Skip()
 	}
+	var cfg Config
+	cfgFilePath := os.Getenv("HOLDER_CONFIG_PATH")
+	if cfgFilePath == "" {
+		panic(fmt.Errorf("ENV var HOLDER_CONFIG_PATH not defined"))
+	}
+	bs, err := ioutil.ReadFile(cfgFilePath)
+	require.Nil(t, err)
+	err = config.Load(string(bs), &cfg)
+	require.Nil(t, err)
 
-	ethClient, err := ethclient.Dial(web3Url)
+	ethClient, err := ethclient.Dial(cfg.Web3.Url)
 	require.Nil(t, err)
 	ethClient2 := eth.NewClient2(ethClient, nil, nil)
 
-	idenStateContractAddress := common.HexToAddress(idenStateContractHex)
 	contractAddresses := idenpubonchain.ContractAddresses{
-		IdenStates: idenStateContractAddress,
+		IdenStates: cfg.Contracts.IdenStates.Address,
 	}
 
 	// define idenPubOnChain, idenPubOffChainRead
@@ -61,74 +83,76 @@ func TestIntHolder(t *testing.T) {
 	idenPubOffChainRead := readerhttp.NewIdenPubOffChainHttp()
 
 	// create identity
-	cfg := holder.ConfigDefault
+	holderCfg := holder.ConfigDefault
 	storage := db.NewMemoryStorage()
 	ksStorage := keystore.MemStorage([]byte{})
 	keyStore, err := keystore.NewKeyStore(&ksStorage, keystore.LightKeyStoreParams)
 	require.Nil(t, err)
-	kOp, err := keyStore.NewKey(pass)
+	kOp, err := keyStore.NewKey([]byte(cfg.KeyStoreBaby.Password.Value))
 	require.Nil(t, err)
-	err = keyStore.UnlockKey(kOp, pass)
+	err = keyStore.UnlockKey(kOp, []byte(cfg.KeyStoreBaby.Password.Value))
 	require.Nil(t, err)
-	ho, err := holder.New(cfg, kOp, []claims.Claimer{}, storage, keyStore, idenPubOnChain, nil, idenPubOffChainRead)
+	ho, err := holder.New(holderCfg, kOp, []claims.Claimer{}, storage, keyStore, idenPubOnChain, nil, idenPubOffChainRead)
 	require.Nil(t, err)
 
 	fmt.Println(ho)
 
+	httpIssuer := httpclient.NewHttpClient(cfg.Issuer.Url)
+
 	// Request claim
-	dObj := make(map[string]string)
-	dObj["value"] = "test0"
-	d, err := json.Marshal(dObj)
-	require.Nil(t, err)
-	r, err := httpPost(issuerUrl+"/claim/request", d)
+	reqClaimRequest := msgsIssuer.ReqClaimRequest{
+		Value: RandString(80),
+	}
+	var resClaimRequest msgsIssuer.ResClaimRequest
+	err = httpIssuer.DoRequest(httpIssuer.NewRequest().Path(
+		"claim/request").Post("").BodyJSON(&reqClaimRequest), &resClaimRequest)
 	require.Nil(t, err)
 
-	// Get Request Status
-	r, err = httpGet(issuerUrl + "/claim/status/1")
-	require.Nil(t, err)
-	assert.Equal(t, r["status"], "approved")
+	// Poll: Get Request Status
+	var resClaimStatus msgsIssuer.ResClaimStatus
+	i := 0
+	for ; i < cfg.Test.Loops; i++ {
+		err = httpIssuer.DoRequest(httpIssuer.NewRequest().Path(
+			fmt.Sprintf("claim/status/%v", resClaimRequest.Id)).Get(""), &resClaimStatus)
+		require.Nil(t, err)
+		if resClaimStatus.Status == msgsIssuer.RequestStatusApproved {
+			break
+		}
+		time.Sleep(cfg.Test.LoopWait.Duration)
+	}
+	if i == cfg.Test.Loops {
+		panic(fmt.Errorf("Reached maximum number of loops for Poll: Get Request Status"))
+	}
 
-	// Retreive Credential
-	dObj2 := make(map[string]*merkletree.Entry)
-	dObj2["value"] = &merkletree.Entry{}
-	d, err = json.Marshal(dObj2)
-	require.Nil(t, err)
-	r, err = httpPost(issuerUrl+"/claim/credential", d)
-	require.Nil(t, err)
-	assert.Equal(t, r["status"], "ready")
-
-	// TODO the maps[] will be replaced by the message packet from servers/issuer and servers/verifier once are ready
-	cred := r["credential"].(*proof.CredentialExistence)
+	// Poll: Retreive Credential
+	reqClaimCredential := msgsIssuer.ReqClaimCredential{
+		Claim: resClaimStatus.Claim,
+	}
+	var resClaimCredential msgsIssuer.ResClaimCredential
+	for ; i < cfg.Test.Loops; i++ {
+		err = httpIssuer.DoRequest(httpIssuer.NewRequest().Path(
+			"claim/credential").Post("").BodyJSON(&reqClaimCredential), &resClaimCredential)
+		require.Nil(t, err)
+		if resClaimCredential.Status == msgsIssuer.ClaimtStatusReady {
+			break
+		}
+		time.Sleep(cfg.Test.LoopWait.Duration)
+	}
+	if i == cfg.Test.Loops {
+		panic(fmt.Errorf("Reached maximum number of loops for Poll: Retrieve Credential"))
+	}
 
 	// get CredentialValidity (fresh proof)
-	credV, err := ho.HolderGetCredentialValidity(cred)
+	credValid, err := ho.HolderGetCredentialValidity(resClaimCredential.Credential)
 	require.Nil(t, err)
 
 	// send the CredentialValidity proof to Verifier
-	dObj3 := make(map[string]*proof.CredentialValidity)
-	dObj3["credential"] = credV
-	d, err = json.Marshal(dObj3)
-	require.Nil(t, err)
-	_, err = httpPost(verifierUrl+"/verify", d)
-	require.Nil(t, err)
-}
+	httpVerifier := httpclient.NewHttpClient(cfg.Verifier.Url)
 
-func httpGet(url string) (map[string]interface{}, error) {
-	m := make(map[string]interface{})
-	resp, err := http.Get(url)
-	if err != nil {
-		return m, err
+	reqVerify := msgsVerifier.ReqVerify{
+		CredentialValidity: credValid,
 	}
-	err = json.NewDecoder(resp.Body).Decode(&m)
-	return m, err
-}
-
-func httpPost(url string, d []byte) (map[string]interface{}, error) {
-	m := make(map[string]interface{})
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(d))
-	if err != nil {
-		return m, err
-	}
-	err = json.NewDecoder(resp.Body).Decode(&m)
-	return m, err
+	err = httpVerifier.DoRequest(httpVerifier.NewRequest().Path(
+		"verify").Post("").BodyJSON(&reqVerify), nil)
+	require.Nil(t, err)
 }
