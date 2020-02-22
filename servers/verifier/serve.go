@@ -54,7 +54,7 @@ func Serve(cfg *Config, srv *Server) {
 	}()
 
 	// start servers.
-	serviceapisrv := serveServiceApi(cfg.configServer.ServiceApi, srv)
+	serviceapisrv := serveServiceApi(cfg.Server.ServiceApi, srv)
 
 	// wait until shutdown signal.
 	<-stopch
