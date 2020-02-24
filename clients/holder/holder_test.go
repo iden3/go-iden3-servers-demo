@@ -23,6 +23,7 @@ import (
 	msgsIssuer "github.com/iden3/go-iden3-servers-demo/servers/issuerdemo/messages"
 	msgsVerifier "github.com/iden3/go-iden3-servers-demo/servers/verifier/messages"
 	"github.com/iden3/go-iden3-servers/config"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
 
@@ -104,14 +105,17 @@ func TestIntHolder(t *testing.T) {
 		Value: RandString(80),
 	}
 	var resClaimRequest msgsIssuer.ResClaimRequest
+	log.WithField("value", reqClaimRequest.Value).Info("Requesting claim")
 	err = httpIssuer.DoRequest(httpIssuer.NewRequest().Path(
 		"claim/request").Post("").BodyJSON(&reqClaimRequest), &resClaimRequest)
 	require.Nil(t, err)
+	log.WithField("id", resClaimRequest.Id).Info("Requested claim")
 
 	// Poll: Get Request Status
 	var resClaimStatus msgsIssuer.ResClaimStatus
 	i := 0
 	for ; i < cfg.Test.Loops; i++ {
+		log.WithField("i", i).Info("Polling: Get Request Status...")
 		err = httpIssuer.DoRequest(httpIssuer.NewRequest().Path(
 			fmt.Sprintf("claim/status/%v", resClaimRequest.Id)).Get(""), &resClaimStatus)
 		require.Nil(t, err)
@@ -124,12 +128,14 @@ func TestIntHolder(t *testing.T) {
 		panic(fmt.Errorf("Reached maximum number of loops for Poll: Get Request Status"))
 	}
 
-	// Poll: Retreive Credential
+	// Poll: Retrieve Credential
 	reqClaimCredential := msgsIssuer.ReqClaimCredential{
 		Claim: resClaimStatus.Claim,
 	}
 	var resClaimCredential msgsIssuer.ResClaimCredential
+	i = 0
 	for ; i < cfg.Test.Loops; i++ {
+		log.WithField("i", i).Info("Polling: Retrieve Credential...")
 		err = httpIssuer.DoRequest(httpIssuer.NewRequest().Path(
 			"claim/credential").Post("").BodyJSON(&reqClaimCredential), &resClaimCredential)
 		require.Nil(t, err)
@@ -141,10 +147,13 @@ func TestIntHolder(t *testing.T) {
 	if i == cfg.Test.Loops {
 		panic(fmt.Errorf("Reached maximum number of loops for Poll: Retrieve Credential"))
 	}
+	log.WithField("cred", resClaimCredential.Credential).Info("Got Credential Exist")
 
 	// get CredentialValidity (fresh proof)
+	log.Info("Calling HolderGetCredentialValidity...")
 	credValid, err := ho.HolderGetCredentialValidity(resClaimCredential.Credential)
 	require.Nil(t, err)
+	log.WithField("cred", credValid).Info("Got Credential Validity")
 
 	// send the CredentialValidity proof to Verifier
 	httpVerifier := httpclient.NewHttpClient(cfg.Verifier.Url)
@@ -152,6 +161,7 @@ func TestIntHolder(t *testing.T) {
 	reqVerify := msgsVerifier.ReqVerify{
 		CredentialValidity: credValid,
 	}
+	log.Info("Sending credential validity to verifier...")
 	err = httpVerifier.DoRequest(httpVerifier.NewRequest().Path(
 		"verify").Post("").BodyJSON(&reqVerify), nil)
 	require.Nil(t, err)

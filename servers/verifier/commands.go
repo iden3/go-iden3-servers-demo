@@ -43,11 +43,7 @@ func CmdStart(c *cli.Context, cfg *Config, endpointServe func(cfg *Config, srv *
 		return err
 	}
 
-	srv.Start()
-
 	endpointServe(cfg, srv)
-
-	srv.StopAndJoin()
 
 	return nil
 }

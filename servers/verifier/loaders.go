@@ -13,13 +13,13 @@ type Server struct {
 	verifier *verifier.Verifier
 }
 
-func (srv *Server) Start() {
-	srv.Server.Start()
-}
-
-func (srv *Server) StopAndJoin() {
-	srv.Server.StopAndJoin()
-}
+// func (srv *Server) Start() {
+// 	srv.Server.Start()
+// }
+//
+// func (srv *Server) StopAndJoin() {
+// 	srv.Server.StopAndJoin()
+// }
 
 func LoadServer(cfg *Config) (*Server, error) {
 	verif, err := LoadVerifier(cfg)

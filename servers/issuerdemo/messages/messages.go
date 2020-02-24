@@ -21,7 +21,7 @@ type Request struct {
 	Id     int               `json:"id" validate:"required"`
 	Value  string            `json:"value" validate:"required"`
 	Status RequestStatus     `json:"status" validate:"required"`
-	Claim  *merkletree.Entry `json:"-"`
+	Claim  *merkletree.Entry `json:"-" pg:",type:json"`
 }
 
 type ResRequestList struct {
