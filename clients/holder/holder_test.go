@@ -161,8 +161,16 @@ func TestIntHolder(t *testing.T) {
 	reqVerify := msgsVerifier.ReqVerify{
 		CredentialValidity: credValid,
 	}
-	log.Info("Sending credential validity to verifier...")
-	err = httpVerifier.DoRequest(httpVerifier.NewRequest().Path(
-		"verify").Post("").BodyJSON(&reqVerify), nil)
+	for ; i < cfg.Test.Loops; i++ {
+		log.Info("Sending credential validity to verifier...")
+		err = httpVerifier.DoRequest(httpVerifier.NewRequest().Path(
+			"verify").Post("").BodyJSON(&reqVerify), nil)
+		if err == nil {
+			break
+		}
+		log.WithError(err).Info("Verification failed")
+		time.Sleep(cfg.Test.LoopWait.Duration)
+	}
+
 	require.Nil(t, err)
 }
