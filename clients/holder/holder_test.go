@@ -16,6 +16,7 @@ import (
 	"github.com/iden3/go-iden3-core/components/idenpuboffchain/readerhttp"
 	"github.com/iden3/go-iden3-core/components/idenpubonchain"
 	"github.com/iden3/go-iden3-core/core/claims"
+	"github.com/iden3/go-iden3-core/core/proof"
 	"github.com/iden3/go-iden3-core/db"
 	"github.com/iden3/go-iden3-core/eth"
 	"github.com/iden3/go-iden3-core/identity/holder"
@@ -150,8 +151,16 @@ func TestIntHolder(t *testing.T) {
 	log.WithField("cred", resClaimCredential.Credential).Info("Got Credential Exist")
 
 	// get CredentialValidity (fresh proof)
-	log.Info("Calling HolderGetCredentialValidity...")
-	credValid, err := ho.HolderGetCredentialValidity(resClaimCredential.Credential)
+	var credValid *proof.CredentialValidity
+	for ; i < cfg.Test.Loops; i++ {
+		log.Info("Calling HolderGetCredentialValidity...")
+		credValid, err = ho.HolderGetCredentialValidity(resClaimCredential.Credential)
+		if err == nil {
+			break
+		}
+		log.WithError(err).Info("GetCredentialValidity failed")
+		time.Sleep(cfg.Test.LoopWait.Duration)
+	}
 	require.Nil(t, err)
 	log.WithField("cred", credValid).Info("Got Credential Validity")
 
