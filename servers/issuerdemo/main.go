@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	log.SetLevel(log.DebugLevel)
 
 	app := cli.NewApp()
 	app.Name = "demo-issuer-iden3"

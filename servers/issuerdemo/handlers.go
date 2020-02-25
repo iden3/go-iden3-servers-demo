@@ -7,6 +7,7 @@ import (
 	"github.com/iden3/go-iden3-core/merkletree"
 	"github.com/iden3/go-iden3-servers-demo/servers/issuerdemo/messages"
 	"github.com/iden3/go-iden3-servers/handlers"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -69,6 +70,11 @@ func handleClaimCredential(c *gin.Context, srv *Server) {
 	credential, err := srv.Issuer.GenCredentialExistence(claims.NewClaimGeneric(req.Claim))
 	status := messages.ClaimtStatusReady
 	if err == issuer.ErrClaimNotYetInOnChainState {
+		log.Debug("Issuer.GenCredentialExistence -> ErrClaimNotYetInOnChainState")
+		status = messages.ClaimtStatusNotYet
+		credential = nil
+	} else if err == issuer.ErrIdenStateOnChainZero {
+		log.Debug("Issuer.GenCredentialExistence -> ErrIdenStateOnChainZero")
 		status = messages.ClaimtStatusNotYet
 		credential = nil
 	} else if err != nil {
@@ -96,13 +102,18 @@ func handleGetIdenPublicData(c *gin.Context, srv *Server) {
 
 func handleGetIdenPublicDataState(c *gin.Context, srv *Server) {
 	var uri struct {
-		State *merkletree.Hash `uri:"state"`
+		State string `uri:"state"`
 	}
 	if err := c.ShouldBindUri(&uri); err != nil {
 		handlers.Fail(c, "cannot validate uri", err)
 		return
 	}
-	_handleGetIdenPublicData(c, srv, uri.State)
+	var state merkletree.Hash
+	if err := state.UnmarshalText([]byte(uri.State)); err != nil {
+		handlers.Fail(c, "cannot unmarshal state", err)
+		return
+	}
+	_handleGetIdenPublicData(c, srv, &state)
 }
 
 //
@@ -145,7 +156,7 @@ func handleRequestsApprove(c *gin.Context, srv *Server) {
 	}
 
 	if err := srv.Requests.Approve(req.Id, claim); err != nil {
-		handlers.Fail(c, "cannot parse json body", err)
+		handlers.Fail(c, "Requests.Approve()", err)
 		return
 	}
 	c.JSON(200, gin.H{})

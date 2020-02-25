@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,8 +27,8 @@ func WithServer(srv *Server, handler func(c *gin.Context, srv *Server)) func(c *
 func serveServiceApi(addr string, srv *Server) *http.Server {
 	// api, serviceapi := serve.NewServiceAPI("/api/unstable", srv)
 	api, adminapi := serve.NewServiceAPI("/api/unstable", &srv.Server)
-	adminapi.GET("/idenpublicdata", WithServer(srv, handleGetIdenPublicData))
-	adminapi.GET("/idenpublicdata/:state", WithServer(srv, handleGetIdenPublicDataState))
+	adminapi.GET(fmt.Sprintf("/idenpublicdata/%s", srv.Issuer.ID()), WithServer(srv, handleGetIdenPublicData))
+	adminapi.GET(fmt.Sprintf("/idenpublicdata/%s/state/:state", srv.Issuer.ID()), WithServer(srv, handleGetIdenPublicDataState))
 	adminapi.POST("/claim/request", WithServer(srv, handleClaimRequest))
 	adminapi.GET("/claim/status/:id", WithServer(srv, handleClaimStatus))
 	adminapi.POST("/claim/credential", WithServer(srv, handleClaimCredential))

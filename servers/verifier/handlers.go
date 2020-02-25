@@ -18,9 +18,9 @@ func handleVerify(c *gin.Context, srv *Server) {
 		handlers.Fail(c, "cannot parse json body", err)
 		return
 	}
-	err := srv.verifier.VerifyCredentialValidity(req.CredentialValidity, 100*time.Hour)
+	err := srv.verifier.VerifyCredentialValidity(req.CredentialValidity, 30*time.Minute)
 	if err != nil {
-		handlers.Fail(c, "cannot VerifyCredentialValidity", err)
+		handlers.Fail(c, "VerifyCredentialValidity()", err)
 		return
 	}
 

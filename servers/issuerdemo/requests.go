@@ -53,7 +53,8 @@ func (r *Requests) Add(value string) (int, error) {
 	r.rw.Lock()
 	defer r.rw.Unlock()
 	request := &messages.Request{
-		Value: value,
+		Value:  value,
+		Status: messages.RequestStatusPending,
 	}
 	if err := r.db.Insert(request); err != nil {
 		return 0, err
@@ -65,13 +66,15 @@ func (r *Requests) Approve(id int, claim merkletree.Entrier) error {
 	r.rw.Lock()
 	defer r.rw.Unlock()
 	if err := r.db.RunInTransaction(func(tx *pg.Tx) error {
-		request := &messages.Request{}
-		if err := tx.Select(&request); err != nil {
+		request := &messages.Request{
+			Id: id,
+		}
+		if err := tx.Select(request); err != nil {
 			return err
 		}
 		request.Claim = claim.Entry()
 		request.Status = messages.RequestStatusApproved
-		if err := tx.Update(&request); err != nil {
+		if err := tx.Update(request); err != nil {
 			return err
 		}
 		return nil
