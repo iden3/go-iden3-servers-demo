@@ -108,7 +108,9 @@ func (r *Requests) List() ([]messages.Request, []messages.Request, []messages.Re
 	r.rw.RLock()
 	defer r.rw.RUnlock()
 
-	var pending, approved, rejected []messages.Request
+	pending := []messages.Request{}
+	approved := []messages.Request{}
+	rejected := []messages.Request{}
 	if err := r.db.RunInTransaction(func(tx *pg.Tx) error {
 		if err := tx.Model(&pending).
 			Where("status = ?", messages.RequestStatusPending).
