@@ -60,5 +60,5 @@ const (
 
 type ResClaimCredential struct {
 	Status     ClaimStatus                `json:"status" validate:"required"`
-	Credential *proof.CredentialExistence `json:"credential" validate:"required"`
+	Credential *proof.CredentialExistence `json:"credential"`
 }

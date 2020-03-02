@@ -94,7 +94,10 @@ func TestIntHolder(t *testing.T) {
 	require.Nil(t, err)
 	err = keyStore.UnlockKey(kOp, []byte(cfg.KeyStoreBaby.Password.Value))
 	require.Nil(t, err)
-	ho, err := holder.New(holderCfg, kOp, []claims.Claimer{}, storage, keyStore, idenPubOnChain, nil, idenPubOffChainRead)
+	_, err = holder.Create(holderCfg, kOp, []claims.Claimer{}, storage, keyStore)
+	require.Nil(t, err)
+
+	ho, err := holder.Load(storage, keyStore, idenPubOnChain, nil, idenPubOffChainRead)
 	require.Nil(t, err)
 
 	fmt.Println(ho)
