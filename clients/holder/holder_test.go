@@ -72,16 +72,16 @@ func TestIntHolder(t *testing.T) {
 	err = config.Load(string(bs), &cfg)
 	require.Nil(t, err)
 
-	ethClient, err := ethclient.Dial(cfg.Web3.Url)
+	_ethClient, err := ethclient.Dial(cfg.Web3.Url)
 	require.Nil(t, err)
-	ethClient2 := eth.NewClient2(ethClient, nil, nil)
+	ethClient := eth.NewClient(_ethClient, nil, nil)
 
 	contractAddresses := idenpubonchain.ContractAddresses{
 		IdenStates: cfg.Contracts.IdenStates.Address,
 	}
 
 	// define idenPubOnChain, idenPubOffChainRead
-	idenPubOnChain := idenpubonchain.New(ethClient2, contractAddresses)
+	idenPubOnChain := idenpubonchain.New(ethClient, contractAddresses)
 	idenPubOffChainRead := readerhttp.NewIdenPubOffChainHttp()
 
 	// create identity

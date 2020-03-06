@@ -33,15 +33,15 @@ func LoadServer(cfg *Config) (*Server, error) {
 }
 
 func LoadVerifier(cfg *Config) (*verifier.Verifier, error) {
-	ethClient, err := ethclient.Dial(cfg.Web3.Url)
+	_ethClient, err := ethclient.Dial(cfg.Web3.Url)
 	if err != nil {
 		return nil, err
 	}
-	ethClient2 := eth.NewClient2(ethClient, nil, nil)
+	ethClient := eth.NewClient(_ethClient, nil, nil)
 	contractAddresses := idenpubonchain.ContractAddresses{
 		IdenStates: cfg.Contracts.IdenStates.Address,
 	}
-	idenPubOnChain := idenpubonchain.New(ethClient2, contractAddresses)
+	idenPubOnChain := idenpubonchain.New(ethClient, contractAddresses)
 	verif := verifier.New(idenPubOnChain)
 	return verif, nil
 }
