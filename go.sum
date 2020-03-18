@@ -180,6 +180,10 @@ github.com/iden3/go-iden3-crypto v0.0.3-0.20190831180703-c95c95b7b161 h1:m/JbZo+
 github.com/iden3/go-iden3-crypto v0.0.3-0.20190831180703-c95c95b7b161/go.mod h1:LLcgB7DLWAUs+8eBSKne+ZHy5z7xtAmlYlEz0M9M8gE=
 github.com/iden3/go-iden3-crypto v0.0.3-0.20191222194000-937500b2032a h1:ducRbOk8EWb+WGFjS55mUdgvhuVGmz7hnj7CljsBghg=
 github.com/iden3/go-iden3-crypto v0.0.3-0.20191222194000-937500b2032a/go.mod h1:LLcgB7DLWAUs+8eBSKne+ZHy5z7xtAmlYlEz0M9M8gE=
+github.com/iden3/go-iden3-crypto v0.0.3 h1:/Z4DHEPTKvWSM0F1DOp9tj9cQmifc3F+4QK2Pzu9Pqw=
+github.com/iden3/go-iden3-crypto v0.0.3/go.mod h1:LLcgB7DLWAUs+8eBSKne+ZHy5z7xtAmlYlEz0M9M8gE=
+github.com/iden3/go-iden3-crypto v0.0.4 h1:rGQEFBvX6d4fDxqkQTizVq5UefB+xdZAg8j5FQ6uv6g=
+github.com/iden3/go-iden3-crypto v0.0.4/go.mod h1:LLcgB7DLWAUs+8eBSKne+ZHy5z7xtAmlYlEz0M9M8gE=
 github.com/iden3/go-iden3-servers v0.0.0-20200219150204-1856e87ce0d8 h1:iDWf/ZDOjca2zrwzFa/SfzRv4KVMmhbm0tuB6TVteGo=
 github.com/iden3/go-iden3-servers v0.0.0-20200219150204-1856e87ce0d8/go.mod h1:CrAeAV1igceO4NxhLQPQiOC+2X7HQ6P9dvhONOriAxk=
 github.com/iden3/go-public-key-encryption v0.0.0-20200129111956-c21e08c0ca6d/go.mod h1:ywEbbcgoETcOzZQ7YedY67DfG8tPuHbH89yn0zhjjeU=
@@ -333,6 +337,7 @@ github.com/segmentio/encoding v0.1.8/go.mod h1:RWhr02uzMB9gQC1x+MfYxedtmBibb9cZ6
 github.com/sergi/go-diff v1.0.0/go.mod h1:0CfEIISq7TuYL3j771MWULgwwjU+GofnZX9QAmXWZgo=
 github.com/shurcooL/sanitized_anchor_name v1.0.0 h1:PdmoCO6wvbs+7yrJyMORt4/BmY5IYyJwS/kOiWx8mHo=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
+github.com/siddontang/go v0.0.0-20180604090527-bdc77568d726/go.mod h1:3yhqj7WBBfRhbBlzyOC3gUxftwsU0u8gqevxwIHQpMw=
 github.com/sirupsen/logrus v1.4.2 h1:SPIRibHv4MatM3XXNO2BJeFLZwZ2LvZgfQ5+UNI2im4=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/spacemonkeygo/openssl v0.0.0-20181017203307-c2dcc5cca94a/go.mod h1:7AyxJNCJ7SBZ1MfVQCWD6Uqo2oubI2Eq2y2eqf+A5r0=
