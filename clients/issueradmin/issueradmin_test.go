@@ -60,6 +60,7 @@ func TestIntIssuerAdmin(t *testing.T) {
 		log.WithField("id", request.Id).WithField("value", request.Value).Info("Approved request")
 	}
 
+	errs := []error{}
 	for _, request := range resRequestList.Pending {
 		log.WithField("id", request.Id).Info("Approving request...")
 		reqRequestApprove := msgsIssuer.ReqRequestApprove{
@@ -67,6 +68,9 @@ func TestIntIssuerAdmin(t *testing.T) {
 		}
 		err = httpIssuerAdmin.DoRequest(httpIssuerAdmin.NewRequest().Path(
 			"requests/approve").Post("").BodyJSON(&reqRequestApprove), nil)
+		errs = append(errs, err)
+	}
+	for _, err := range errs {
 		require.Nil(t, err)
 	}
 }
