@@ -97,7 +97,7 @@ func TestIntHolder(t *testing.T) {
 	_, err = holder.Create(holderCfg, kOp, []claims.Claimer{}, storage, keyStore)
 	require.Nil(t, err)
 
-	ho, err := holder.Load(storage, keyStore, idenPubOnChain, nil, idenPubOffChainRead)
+	ho, err := holder.Load(storage, keyStore, idenPubOnChain, nil, nil, idenPubOffChainRead)
 	require.Nil(t, err)
 
 	fmt.Println(ho)
