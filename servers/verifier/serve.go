@@ -16,6 +16,7 @@ func init() {
 	gin.SetMode(gin.ReleaseMode)
 }
 
+// WithServer wraps a handler function with gin context
 func WithServer(srv *Server, handler func(c *gin.Context, srv *Server)) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		handler(c, srv)
@@ -23,10 +24,10 @@ func WithServer(srv *Server, handler func(c *gin.Context, srv *Server)) func(c *
 }
 
 // serveServiceApi start service api calls.
-func serveServiceApi(addr string, srv *Server) *http.Server {
+func serveServiceAPI(addr, ZKPath string, srv *Server) *http.Server {
 	api, prefixapi := serve.NewServiceAPI("/api/unstable", &srv.Server)
 	prefixapi.POST("/verify", WithServer(srv, handleVerify))
-
+	prefixapi.Static("/artifacts", ZKPath)
 	serviceapisrv := &http.Server{Addr: addr, Handler: api}
 	go func() {
 		if err := serve.ListenAndServe(serviceapisrv, "Service"); err != nil &&
@@ -39,7 +40,6 @@ func serveServiceApi(addr string, srv *Server) *http.Server {
 
 // Serve initilization all services and its corresponding api calls.
 func Serve(cfg *Config, srv *Server) {
-
 	stopch := make(chan interface{})
 
 	// catch ^C to send the stop signal
@@ -54,7 +54,7 @@ func Serve(cfg *Config, srv *Server) {
 	}()
 
 	// start servers.
-	serviceapisrv := serveServiceApi(cfg.Server.ServiceApi, srv)
+	serviceapisrv := serveServiceAPI(cfg.Server.ServiceApi, cfg.StaticResources.Path, srv)
 
 	// wait until shutdown signal.
 	<-stopch
