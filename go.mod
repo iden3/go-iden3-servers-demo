@@ -17,6 +17,6 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.29.1
 )
 
-// replace github.com/iden3/go-iden3-core => ../go-iden3-core
+replace github.com/iden3/go-iden3-core => ../go-iden3-core
 
-// replace github.com/iden3/go-iden3-servers => ../go-iden3-servers
+replace github.com/iden3/go-iden3-servers => ../go-iden3-servers

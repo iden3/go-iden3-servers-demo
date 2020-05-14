@@ -5,12 +5,14 @@ import (
 	"github.com/iden3/go-iden3-core/components/idenpubonchain"
 	"github.com/iden3/go-iden3-core/components/verifier"
 	"github.com/iden3/go-iden3-core/eth"
+	zkutils "github.com/iden3/go-iden3-core/utils/zk"
 	"github.com/iden3/go-iden3-servers/loaders"
 )
 
 type Server struct {
 	loaders.Server
-	verifier *verifier.Verifier
+	verifier              *verifier.Verifier
+	zkFilesCredentialDemo *zkutils.ZkFiles
 }
 
 // func (srv *Server) Start() {
@@ -26,9 +28,14 @@ func LoadServer(cfg *Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	zkFilesCredentialDemo := cfg.ZkFilesCredentialDemo.Value()
+	if err := zkFilesCredentialDemo.LoadVerificationKey(); err != nil {
+		return nil, err
+	}
 
 	return &Server{
-		verifier: verif,
+		verifier:              verif,
+		zkFilesCredentialDemo: zkFilesCredentialDemo,
 	}, nil
 }
 
