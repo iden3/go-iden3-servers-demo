@@ -27,7 +27,8 @@ func WithServer(srv *Server, handler func(c *gin.Context, srv *Server)) func(c *
 func serveServiceAPI(addr, ZKPath string, srv *Server) *http.Server {
 	api, prefixapi := serve.NewServiceAPI("/api/unstable", &srv.Server)
 	prefixapi.POST("/verify", WithServer(srv, handleVerify))
-	prefixapi.Static("/artifacts", ZKPath)
+	prefixapi.POST("/credentialDemo/verifyzkp", WithServer(srv, handleVerifyZkp))
+	prefixapi.Static("/credentialDemo/artifacts", ZKPath)
 	serviceapisrv := &http.Server{Addr: addr, Handler: api}
 	go func() {
 		if err := serve.ListenAndServe(serviceapisrv, "Service"); err != nil &&
@@ -54,7 +55,7 @@ func Serve(cfg *Config, srv *Server) {
 	}()
 
 	// start servers.
-	serviceapisrv := serveServiceAPI(cfg.Server.ServiceApi, cfg.StaticResources.Path, srv)
+	serviceapisrv := serveServiceAPI(cfg.Server.ServiceApi, cfg.ZkFilesCredentialDemo.Path, srv)
 
 	// wait until shutdown signal.
 	<-stopch

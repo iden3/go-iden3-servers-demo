@@ -26,3 +26,25 @@ func handleVerify(c *gin.Context, srv *Server) {
 
 	c.JSON(200, gin.H{})
 }
+
+func handleVerifyZkp(c *gin.Context, srv *Server) {
+	var req messages.ReqVerifyZkp
+	if err := c.ShouldBindJSON(&req); err != nil {
+		handlers.Fail(c, "cannot parse json body", err)
+		return
+	}
+	err := srv.verifier.VerifyZkProofCredential(
+		req.ZkProof,
+		req.PubSignals,
+		req.IssuerID,
+		req.IdenStateBlockN,
+		srv.zkFilesCredentialDemo,
+		30*time.Minute,
+	)
+	if err != nil {
+		handlers.Fail(c, "VerifyZkProofCredential()", err)
+		return
+	}
+
+	c.JSON(200, gin.H{})
+}
