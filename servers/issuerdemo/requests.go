@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-pg/pg/v9"
 	"github.com/go-pg/pg/v9/orm"
+	"github.com/iden3/go-iden3-core/core"
 	"github.com/iden3/go-iden3-core/merkletree"
 	"github.com/iden3/go-iden3-servers-demo/servers/issuerdemo/messages"
 	log "github.com/sirupsen/logrus"
@@ -49,12 +50,13 @@ func (r *Requests) Get(id int) (*messages.Request, error) {
 	return request, nil
 }
 
-func (r *Requests) Add(value string) (int, error) {
+func (r *Requests) Add(holderID *core.ID, value string) (int, error) {
 	r.rw.Lock()
 	defer r.rw.Unlock()
 	request := &messages.Request{
-		Value:  value,
-		Status: messages.RequestStatusPending,
+		HolderID: holderID,
+		Value:    value,
+		Status:   messages.RequestStatusPending,
 	}
 	if err := r.db.Insert(request); err != nil {
 		return 0, err

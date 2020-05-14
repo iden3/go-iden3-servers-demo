@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/iden3/go-iden3-core/core"
 	"github.com/iden3/go-iden3-core/core/claims"
 	"github.com/iden3/go-iden3-core/identity/issuer"
 	"github.com/iden3/go-iden3-core/merkletree"
@@ -32,7 +33,7 @@ func handleClaimRequest(c *gin.Context, srv *Server) {
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
 		return
 	}
-	id, err := srv.Requests.Add(req.Value)
+	id, err := srv.Requests.Add(req.HolderID, req.Value)
 	if err != nil {
 		handlers.Fail(c, "Requests.Add()", err)
 		return
@@ -133,6 +134,16 @@ func handleRequestsList(c *gin.Context, srv *Server) {
 	})
 }
 
+func newClaimDemo(id *core.ID, index, value []byte) claims.Claimer {
+	indexBytes, valueBytes := [claims.IndexSubjectSlotLen]byte{}, [claims.ValueSlotLen]byte{}
+	if len(index) > 248/8*2 || len(value) > 248/8*3 {
+		panic("index or value too long")
+	}
+	copy(indexBytes[152/8:], index[:])
+	copy(valueBytes[216/8:], value[:])
+	return claims.NewClaimOtherIden(id, indexBytes, valueBytes)
+}
+
 func handleRequestsApprove(c *gin.Context, srv *Server) {
 	var req messages.ReqRequestApprove
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
@@ -145,9 +156,10 @@ func handleRequestsApprove(c *gin.Context, srv *Server) {
 	}
 
 	// Create the Claim
-	indexSlot, valueSlot := [claims.IndexSlotLen]byte{}, [claims.ValueSlotLen]byte{}
-	copy(indexSlot[:], []byte(request.Value))
-	claim := claims.NewClaimBasic(indexSlot, valueSlot)
+	claim := newClaimDemo(request.HolderID,
+		[]byte("Ut provident occaecati nobis ipsam molestiae ut."), []byte(request.Value))
+	// claim := newClaimDemo(request.HolderID,
+	// 	[]byte("Mia kusenveturilo estas plena je angiloj"), []byte(request.Value))
 
 	// Issue Claim
 	if err := srv.Issuer.IssueClaim(claim); err != nil {
