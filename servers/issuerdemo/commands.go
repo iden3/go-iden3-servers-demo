@@ -64,12 +64,15 @@ func CmdNewIssuer(c *cli.Context) error {
 		return err
 	}
 	var cfg struct {
-		Postgres ConfigPostgres `validate:"required"`
+		Sqlite ConfigSqlite `validate:"required"`
 	}
 	if err := config.LoadFromCliFlag(c, &cfg); err != nil {
 		return err
 	}
-	requests := LoadRequests(&cfg.Postgres)
+	requests, err := LoadRequests(&cfg.Sqlite)
+	if err != nil {
+		return err
+	}
 	return requests.Init()
 }
 

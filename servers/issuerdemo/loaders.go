@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/go-pg/pg/v9"
 	"github.com/iden3/go-iden3-servers/loaders"
+	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
+	"xorm.io/xorm"
 )
 
 type Server struct {
@@ -24,14 +25,12 @@ func (srv *Server) StopAndJoin() {
 	}
 }
 
-func LoadRequests(cfg *ConfigPostgres) *Requests {
-	db := pg.Connect(&pg.Options{
-		User:     cfg.User,
-		Password: cfg.Password,
-		Database: cfg.Database,
-		Addr:     cfg.Addr,
-	})
-	return NewRequests(db)
+func LoadRequests(cfg *ConfigSqlite) (*Requests, error) {
+	db, err := xorm.NewEngine("sqlite3", fmt.Sprintf("file:%v?cache=shared&mode=rwc", cfg.Path))
+	if err != nil {
+		return nil, err
+	}
+	return NewRequests(db), nil
 }
 
 func LoadServer(cfg *Config) (*Server, error) {
@@ -39,6 +38,9 @@ func LoadServer(cfg *Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	requests := LoadRequests(&cfg.Postgres)
+	requests, err := LoadRequests(&cfg.Sqlite)
+	if err != nil {
+		return nil, err
+	}
 	return &Server{Server: *srv, Requests: requests}, nil
 }

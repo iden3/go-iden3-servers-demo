@@ -19,11 +19,11 @@ type Request struct {
 	// Value  string            `sql:",notnull" pg:",use_zero" json:"value" validate:"required"`
 	// Status RequestStatus     `sql:",notnull" pg:",use_zero" json:"status" validate:"required"`
 	// Claim  *merkletree.Entry ` pg:",use_zero" json:"-"`
-	Id       int               `json:"id" validate:"required"`
-	HolderID *core.ID          `json:"holderId" validate:"required"`
+	Id       int               `json:"id" xorm:"pk autoincr" validate:"required"`
+	HolderID *core.ID          `json:"holderId" xorm:"json" validate:"required"`
 	Value    string            `json:"value" validate:"required"`
 	Status   RequestStatus     `json:"status" validate:"required"`
-	Claim    *merkletree.Entry `json:"-" pg:",type:json"`
+	Claim    *merkletree.Entry `json:"-" xorm:"json"`
 }
 
 type ResRequestList struct {
