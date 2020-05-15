@@ -7,6 +7,7 @@ import (
 	"os/signal"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iden3/go-iden3-servers/handlers"
 	"github.com/iden3/go-iden3-servers/serve"
 
 	log "github.com/sirupsen/logrus"
@@ -29,6 +30,7 @@ func serveServiceAPI(addr, ZKPath string, srv *Server) *http.Server {
 	prefixapi.POST("/verify", WithServer(srv, handleVerify))
 	prefixapi.POST("/credentialDemo/verifyzkp", WithServer(srv, handleVerifyZkp))
 	prefixapi.Static("/credentialDemo/artifacts", ZKPath)
+	prefixapi.GET("/status", handlers.HandleStatus)
 	serviceapisrv := &http.Server{Addr: addr, Handler: api}
 	go func() {
 		if err := serve.ListenAndServe(serviceapisrv, "Service"); err != nil &&

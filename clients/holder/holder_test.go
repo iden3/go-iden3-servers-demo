@@ -5,6 +5,7 @@ package main
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -22,6 +23,7 @@ import (
 	"github.com/iden3/go-iden3-core/identity/holder"
 	"github.com/iden3/go-iden3-core/keystore"
 	"github.com/iden3/go-iden3-core/merkletree"
+	zkutils "github.com/iden3/go-iden3-core/utils/zk"
 	msgsIssuer "github.com/iden3/go-iden3-servers-demo/servers/issuerdemo/messages"
 	msgsVerifier "github.com/iden3/go-iden3-servers-demo/servers/verifier/messages"
 	"github.com/iden3/go-iden3-servers/config"
@@ -65,6 +67,7 @@ func RandString(n int) string {
 }
 
 func TestIntHolder(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
 	if !integration {
 		t.Skip()
 	}
@@ -77,6 +80,7 @@ func TestIntHolder(t *testing.T) {
 	require.Nil(t, err)
 	err = config.Load(string(bs), &cfg)
 	require.Nil(t, err)
+	cfg.CredentialDemoZKProof.Files.Url = fmt.Sprintf("%v/credentialDemo/artifacts", cfg.Verifier.Url)
 
 	zkFilesCredentialDemo := cfg.CredentialDemoZKProof.Files.Value()
 	err = zkFilesCredentialDemo.LoadAll()
@@ -116,7 +120,8 @@ func TestIntHolder(t *testing.T) {
 
 	// Request claim
 	reqClaimRequest := msgsIssuer.ReqClaimRequest{
-		Value: RandString(80),
+		HolderID: ho.ID(),
+		Value:    RandString(80),
 	}
 	var resClaimRequest msgsIssuer.ResClaimRequest
 	log.WithField("value", reqClaimRequest.Value).Info("Requesting claim")
@@ -188,9 +193,21 @@ func TestIntHolder(t *testing.T) {
 			metadata.Unmarshal(claim)
 			data := claim.Data
 			inputs["claimI2_3"] = []*big.Int{data[0*4+2].BigInt(), data[0*4+3].BigInt()}
-			inputs["claimV1_3"] = []*big.Int{data[1*4+1].BigInt(), data[1*4+2].BigInt(), data[1*4+2].BigInt()}
+			inputs["claimV1_3"] = []*big.Int{data[1*4+1].BigInt(), data[1*4+2].BigInt(), data[1*4+3].BigInt()}
 			inputs["id"] = ho.ID().BigInt()
 			inputs["revNonce"] = new(big.Int).SetUint64(uint64(metadata.RevNonce))
+
+			// DBG BEGIN
+			in, err := zkutils.InputsToMapStrings(inputs)
+			if err != nil {
+				return err
+			}
+			inJSON, err := json.MarshalIndent(in, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(inJSON))
+			// DBG END
 
 			return nil
 		}
@@ -200,7 +217,7 @@ func TestIntHolder(t *testing.T) {
 		cfg.CredentialDemoZKProof.IDOwnershipLevels, cfg.CredentialDemoZKProof.IssuerLevels,
 		zkFilesCredentialDemo)
 	require.Nil(t, err)
-	log.WithField("cred", credValid).Info("Got Credential Validity")
+	log.WithField("zkProofCredOut", zkProofCredOut).Info("Calculated credential ownership zkp")
 
 	// send the CredentialValidity proof to Verifier
 	reqVerifyZkp := msgsVerifier.ReqVerifyZkp{
@@ -209,8 +226,8 @@ func TestIntHolder(t *testing.T) {
 		IssuerID:        zkProofCredOut.IssuerID,
 		IdenStateBlockN: zkProofCredOut.IdenStateBlockN,
 	}
-	log.Info("Sending credential validity to verifier...")
+	log.Info("Sending credential ownership zkp to verifier...")
 	err = httpVerifier.DoRequest(httpVerifier.NewRequest().Path(
-		"/credentialDemo/verifyzkp").Post("").BodyJSON(&reqVerifyZkp), nil)
+		"credentialDemo/verifyzkp").Post("").BodyJSON(&reqVerifyZkp), nil)
 	require.Nil(t, err)
 }

@@ -8,6 +8,7 @@ import (
 	"os/signal"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iden3/go-iden3-servers/handlers"
 	"github.com/iden3/go-iden3-servers/serve"
 
 	log "github.com/sirupsen/logrus"
@@ -26,12 +27,13 @@ func WithServer(srv *Server, handler func(c *gin.Context, srv *Server)) func(c *
 // serveServiceApi start service api calls.
 func serveServiceApi(addr string, srv *Server) *http.Server {
 	// api, serviceapi := serve.NewServiceAPI("/api/unstable", srv)
-	api, adminapi := serve.NewServiceAPI("/api/unstable", &srv.Server)
-	adminapi.GET(fmt.Sprintf("/idenpublicdata/%s", srv.Issuer.ID()), WithServer(srv, handleGetIdenPublicData))
-	adminapi.GET(fmt.Sprintf("/idenpublicdata/%s/state/:state", srv.Issuer.ID()), WithServer(srv, handleGetIdenPublicDataState))
-	adminapi.POST("/claim/request", WithServer(srv, handleClaimRequest))
-	adminapi.GET("/claim/status/:id", WithServer(srv, handleClaimStatus))
-	adminapi.POST("/claim/credential", WithServer(srv, handleClaimCredential))
+	api, prefixapi := serve.NewServiceAPI("/api/unstable", &srv.Server)
+	prefixapi.GET(fmt.Sprintf("/idenpublicdata/%s", srv.Issuer.ID()), WithServer(srv, handleGetIdenPublicData))
+	prefixapi.GET(fmt.Sprintf("/idenpublicdata/%s/state/:state", srv.Issuer.ID()), WithServer(srv, handleGetIdenPublicDataState))
+	prefixapi.POST("/claim/request", WithServer(srv, handleClaimRequest))
+	prefixapi.GET("/claim/status/:id", WithServer(srv, handleClaimStatus))
+	prefixapi.POST("/claim/credential", WithServer(srv, handleClaimCredential))
+	prefixapi.GET("/status", handlers.HandleStatus)
 
 	serviceapisrv := &http.Server{Addr: addr, Handler: api}
 	go func() {

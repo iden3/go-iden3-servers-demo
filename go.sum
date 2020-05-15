@@ -185,6 +185,8 @@ github.com/iden3/go-circom-prover-verifier v0.0.0-20200426193719-dc4ac0b35021 h1
 github.com/iden3/go-circom-prover-verifier v0.0.0-20200426193719-dc4ac0b35021/go.mod h1:ZGStP/GSsKbIaLEowo7JmqnWgneFAapA4NrZakHcUk4=
 github.com/iden3/go-circom-prover-verifier v0.0.0-20200507101508-1aa316cbd2cf h1:L+zRFd+U++5C8/nvGU2kFBA9iJ+u9hCva3fM2ckvOs8=
 github.com/iden3/go-circom-prover-verifier v0.0.0-20200507101508-1aa316cbd2cf/go.mod h1:ZGStP/GSsKbIaLEowo7JmqnWgneFAapA4NrZakHcUk4=
+github.com/iden3/go-circom-prover-verifier v0.0.0-20200515100033-bedd64cc7062 h1:ubD/0wj/izgCFI3sqRXtpcjvpOGGC4egotEEZn1kqUI=
+github.com/iden3/go-circom-prover-verifier v0.0.0-20200515100033-bedd64cc7062/go.mod h1:ZGStP/GSsKbIaLEowo7JmqnWgneFAapA4NrZakHcUk4=
 github.com/iden3/go-circom-witnesscalc v0.0.0-20200428090142-66259888c6fd h1:Z1OSMreh1dB7jpzNA/3+8yJDoOy/r+cjaNpRCjQtUEM=
 github.com/iden3/go-circom-witnesscalc v0.0.0-20200428090142-66259888c6fd/go.mod h1:c3FEU+iwM55k0lvzpwkCk5ljmv+gV2nnkCVHiuUDxFo=
 github.com/iden3/go-circom-witnesscalc v0.0.0-20200429093613-a13396c6e429 h1:UTGpt2GCsNNC2sSYS6iBUDnR75HiCkogHdVSI2JyUsk=
@@ -221,6 +223,8 @@ github.com/iden3/go-iden3-servers v0.0.2-0.20200507113547-78787a465ab9/go.mod h1
 github.com/iden3/go-public-key-encryption v0.0.0-20200129111956-c21e08c0ca6d/go.mod h1:ywEbbcgoETcOzZQ7YedY67DfG8tPuHbH89yn0zhjjeU=
 github.com/iden3/go-wasm3 v0.0.0-20200407092348-656263e6984f h1:3c4OK2ufLtTs2ieQm3EsmjZB0WYhh9x/V00ZBClmgCc=
 github.com/iden3/go-wasm3 v0.0.0-20200407092348-656263e6984f/go.mod h1:j+TcAB94Dfrjlu5kJt83h2OqAU+oyNUTwNZnQyII1sI=
+github.com/iden3/go-wasm3 v0.0.0-20200514131940-7bb78777b8ec h1:uQR2IqYOH/y0f4NNdYnw5iw6CCVbWiuA2iVd0pdyXWU=
+github.com/iden3/go-wasm3 v0.0.0-20200514131940-7bb78777b8ec/go.mod h1:j+TcAB94Dfrjlu5kJt83h2OqAU+oyNUTwNZnQyII1sI=
 github.com/influxdata/influxdb v1.2.3-0.20180221223340-01288bdb0883/go.mod h1:qZna6X/4elxqT3yI9iZYdZrWWdeFOOprn86kgg4+IzY=
 github.com/influxdata/influxdb v1.7.8/go.mod h1:qZna6X/4elxqT3yI9iZYdZrWWdeFOOprn86kgg4+IzY=
 github.com/ipfs/go-cid v0.0.1/go.mod h1:GHWU/WuQdMPmIosc4Yn1bcCT7dSeX4lBafM7iqUPQvM=

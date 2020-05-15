@@ -29,7 +29,7 @@ func LoadServer(cfg *Config) (*Server, error) {
 		return nil, err
 	}
 	zkFilesCredentialDemo := cfg.ZkFilesCredentialDemo.Value()
-	if err := zkFilesCredentialDemo.LoadVerificationKey(); err != nil {
+	if err := zkFilesCredentialDemo.LoadAll(); err != nil {
 		return nil, err
 	}
 
