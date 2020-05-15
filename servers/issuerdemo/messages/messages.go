@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"github.com/iden3/go-iden3-core/core"
 	"github.com/iden3/go-iden3-core/core/proof"
 	"github.com/iden3/go-iden3-core/merkletree"
 )
@@ -18,10 +19,11 @@ type Request struct {
 	// Value  string            `sql:",notnull" pg:",use_zero" json:"value" validate:"required"`
 	// Status RequestStatus     `sql:",notnull" pg:",use_zero" json:"status" validate:"required"`
 	// Claim  *merkletree.Entry ` pg:",use_zero" json:"-"`
-	Id     int               `json:"id" validate:"required"`
-	Value  string            `json:"value" validate:"required"`
-	Status RequestStatus     `json:"status" validate:"required"`
-	Claim  *merkletree.Entry `json:"-" pg:",type:json"`
+	Id       int               `json:"id" xorm:"pk autoincr" validate:"required"`
+	HolderID *core.ID          `json:"holderId" xorm:"json" validate:"required"`
+	Value    string            `json:"value" validate:"required"`
+	Status   RequestStatus     `json:"status" validate:"required"`
+	Claim    *merkletree.Entry `json:"-" xorm:"json"`
 }
 
 type ResRequestList struct {
@@ -35,7 +37,8 @@ type ReqRequestApprove struct {
 }
 
 type ReqClaimRequest struct {
-	Value string `json:"value" validate:"required,min=1,max=80"`
+	HolderID *core.ID `json:"holderId" validate:"required"`
+	Value    string   `json:"value" validate:"required,min=1,max=80"`
 }
 
 type ResClaimRequest struct {
