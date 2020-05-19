@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/urfave/cli"
 
@@ -44,12 +45,13 @@ var CommandsServer = []cli.Command{
 	{
 		Name:  "eth",
 		Usage: "create and manage eth wallet",
-		Subcommands: []cli.Command{{
-			Name:    "new",
-			Aliases: []string{},
-			Usage:   "create new Eth Account Address",
-			Action:  cmd.CmdNewEthAccount,
-		},
+		Subcommands: []cli.Command{
+			{
+				Name:    "new",
+				Aliases: []string{},
+				Usage:   "create new Eth Account Address",
+				Action:  cmd.CmdNewEthAccount,
+			},
 			{
 				Name:    "import",
 				Aliases: []string{},
@@ -91,7 +93,7 @@ func CmdStart(c *cli.Context, cfg *Config, endpointServe func(cfg *Config, srv *
 		"balance": balance.String(),
 		"address": srv.EthClient.Account().Address.Hex(),
 	}).Info("Account balance retrieved")
-	if balance.Int64() < 3000000 {
+	if balance.Cmp(new(big.Int).SetUint64(3000000)) == -1 {
 		return fmt.Errorf("Not enough funds in the ethereum address")
 	}
 
