@@ -84,7 +84,7 @@ func (r *Requests) Approve(id int, claim merkletree.Entrier) error {
 		}
 		request.Claim = claim.Entry()
 		request.Status = messages.RequestStatusApproved
-		if _, err := tx.Update(request); err != nil {
+		if _, err := tx.ID(request.Id).Update(request); err != nil {
 			return nil, err
 		}
 		return nil, nil
