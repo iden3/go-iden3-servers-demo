@@ -205,12 +205,16 @@ github.com/iden3/go-circom-witnesscalc v0.0.0-20200429093613-a13396c6e429 h1:UTG
 github.com/iden3/go-circom-witnesscalc v0.0.0-20200429093613-a13396c6e429/go.mod h1:c3FEU+iwM55k0lvzpwkCk5ljmv+gV2nnkCVHiuUDxFo=
 github.com/iden3/go-iden3-core v0.0.8-0.20200515134003-99b3cc33f463 h1:faZIi4aAYXgsSrF9uevL+eI1JnZ1vE0aFu3AU8Vuedk=
 github.com/iden3/go-iden3-core v0.0.8-0.20200515134003-99b3cc33f463/go.mod h1:mMnPlXVspF49lxOb7/fqp7VCfD/YYEBvAjnUt+dkM8s=
+github.com/iden3/go-iden3-core v0.0.8-0.20200520133352-b5fbb4f848f9 h1:kw3/6MhOQvqd9Nse33+9YVEPD9M/h45g4tIQfZxnPjk=
+github.com/iden3/go-iden3-core v0.0.8-0.20200520133352-b5fbb4f848f9/go.mod h1:mMnPlXVspF49lxOb7/fqp7VCfD/YYEBvAjnUt+dkM8s=
 github.com/iden3/go-iden3-crypto v0.0.5-0.20200421133134-14c3144613d4 h1:C+WGAJM9G5MxU62cAVrcwivFLk1muyENjGD5DGADk5o=
 github.com/iden3/go-iden3-crypto v0.0.5-0.20200421133134-14c3144613d4/go.mod h1:XKw1oDwYn2CIxKOtr7m/mL5jMn4mLOxAxtZBRxQBev8=
 github.com/iden3/go-iden3-crypto v0.0.5-0.20200428163115-b1468fc0760f h1:geZ9S70cAAo/Dtu9LvUKjWs0rBsDZjWdYzSCkNc+gVE=
 github.com/iden3/go-iden3-crypto v0.0.5-0.20200428163115-b1468fc0760f/go.mod h1:XKw1oDwYn2CIxKOtr7m/mL5jMn4mLOxAxtZBRxQBev8=
 github.com/iden3/go-iden3-servers v0.0.2-0.20200515143026-71f0da093a96 h1:xIsVhuN64q9tQWZa7qGP4hcbtGu60OdPuCPUB5aV8Ys=
 github.com/iden3/go-iden3-servers v0.0.2-0.20200515143026-71f0da093a96/go.mod h1:2m/BAy6OUeA/TV39Prpa4yJh3pOJsnrvHGiE97vxnAI=
+github.com/iden3/go-iden3-servers v0.0.2-0.20200520133920-2ee8f9ade455 h1:0fplAPQZCAs81HK85T0D+ECy7EP43h8RBh+mtE4wSMY=
+github.com/iden3/go-iden3-servers v0.0.2-0.20200520133920-2ee8f9ade455/go.mod h1:ynD8W9XLyskb0J+Hn5nbFRTIXraDR9qKzXiyFroRMxQ=
 github.com/iden3/go-public-key-encryption v0.0.0-20200129111956-c21e08c0ca6d/go.mod h1:ywEbbcgoETcOzZQ7YedY67DfG8tPuHbH89yn0zhjjeU=
 github.com/iden3/go-wasm3 v0.0.0-20200407092348-656263e6984f h1:3c4OK2ufLtTs2ieQm3EsmjZB0WYhh9x/V00ZBClmgCc=
 github.com/iden3/go-wasm3 v0.0.0-20200407092348-656263e6984f/go.mod h1:j+TcAB94Dfrjlu5kJt83h2OqAU+oyNUTwNZnQyII1sI=

@@ -7,8 +7,8 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/gorilla/mux v1.7.4
 	github.com/iden3/go-circom-prover-verifier v0.0.0-20200515100033-bedd64cc7062
-	github.com/iden3/go-iden3-core v0.0.8-0.20200515134003-99b3cc33f463
-	github.com/iden3/go-iden3-servers v0.0.2-0.20200515143026-71f0da093a96
+	github.com/iden3/go-iden3-core v0.0.8-0.20200520133352-b5fbb4f848f9
+	github.com/iden3/go-iden3-servers v0.0.2-0.20200520133920-2ee8f9ade455
 	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/onsi/ginkgo v1.10.1 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
