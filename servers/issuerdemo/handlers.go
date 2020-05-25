@@ -157,9 +157,8 @@ func handleRequestsApprove(c *gin.Context, srv *Server) {
 
 	// Create the Claim
 	claim := newClaimDemo(request.HolderID,
-		[]byte("Ut provident occaecati nobis ipsam molestiae ut."), []byte(request.Value))
-	// claim := newClaimDemo(request.HolderID,
-	// 	[]byte("Mia kusenveturilo estas plena je angiloj"), []byte(request.Value))
+		append([]byte("Mia kusenveturilo estas plena je angiloj"), []byte(request.Index)...),
+		[]byte(request.Value))
 
 	// Issue Claim
 	if err := srv.Issuer.IssueClaim(claim); err != nil {

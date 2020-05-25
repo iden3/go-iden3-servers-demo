@@ -121,6 +121,7 @@ func TestIntHolder(t *testing.T) {
 	// Request claim
 	reqClaimRequest := msgsIssuer.ReqClaimRequest{
 		HolderID: ho.ID(),
+		Index:    RandString(16),
 		Value:    RandString(80),
 	}
 	var resClaimRequest msgsIssuer.ResClaimRequest

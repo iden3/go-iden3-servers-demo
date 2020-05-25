@@ -21,6 +21,7 @@ type Request struct {
 	// Claim  *merkletree.Entry ` pg:",use_zero" json:"-"`
 	Id       int               `json:"id" xorm:"pk autoincr" validate:"required"`
 	HolderID *core.ID          `json:"holderId" xorm:"json" validate:"required"`
+	Index    string            `json:"index" validate:"required"`
 	Value    string            `json:"value" validate:"required"`
 	Status   RequestStatus     `json:"status" validate:"required"`
 	Claim    *merkletree.Entry `json:"-" xorm:"json"`
@@ -38,6 +39,7 @@ type ReqRequestApprove struct {
 
 type ReqClaimRequest struct {
 	HolderID *core.ID `json:"holderId" validate:"required"`
+	Index    string   `json:"index" validate:"required,min=1,max=16"`
 	Value    string   `json:"value" validate:"required,min=1,max=80"`
 }
 
