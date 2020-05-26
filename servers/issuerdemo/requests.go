@@ -56,11 +56,12 @@ func (r *Requests) Get(id int) (*messages.Request, error) {
 	return request, nil
 }
 
-func (r *Requests) Add(holderID *core.ID, value string) (int, error) {
+func (r *Requests) Add(holderID *core.ID, index, value string) (int, error) {
 	r.rw.Lock()
 	defer r.rw.Unlock()
 	request := &messages.Request{
 		HolderID: holderID,
+		Index:    index,
 		Value:    value,
 		Status:   messages.RequestStatusPending,
 	}

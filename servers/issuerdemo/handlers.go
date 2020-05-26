@@ -35,7 +35,7 @@ func handleClaimRequest(c *gin.Context, srv *Server) {
 	if err := ShouldBindJSONValidate(c, &req); err != nil {
 		return
 	}
-	id, err := srv.Requests.Add(req.HolderID, req.Value)
+	id, err := srv.Requests.Add(req.HolderID, req.Index, req.Value)
 	if err != nil {
 		handlers.Fail(c, "Requests.Add()", err)
 		return
@@ -159,7 +159,7 @@ func handleRequestsApprove(c *gin.Context, srv *Server) {
 
 	// Create the Claim
 	claim := newClaimDemo(request.HolderID,
-		append([]byte("Mia kusenveturilo estas plena je angiloj"), []byte(request.Index)...),
+		append([]byte("Mia kusenveturilo estas plena je angiloj."), []byte(request.Index)...),
 		[]byte(request.Value))
 
 	entry := claim.Entry()
