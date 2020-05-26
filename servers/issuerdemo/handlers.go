@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/hex"
+
 	"github.com/gin-gonic/gin"
 	"github.com/iden3/go-iden3-core/core"
 	"github.com/iden3/go-iden3-core/core/claims"
@@ -162,6 +164,12 @@ func handleRequestsApprove(c *gin.Context, srv *Server) {
 
 	// Issue Claim
 	if err := srv.Issuer.IssueClaim(claim); err != nil {
+		entry := claim.Entry()
+		claimHex := make([]string, 8)
+		for i := 0; i < 8; i++ {
+			claimHex[i] = hex.EncodeToString(entry.Data[i][:])
+		}
+		log.WithField("claim", claimHex).Debug("Issuer.IssueClaim")
 		handlers.Fail(c, "Issuer.IssueClaim()", err)
 		return
 	}
