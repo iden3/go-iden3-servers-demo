@@ -162,14 +162,15 @@ func handleRequestsApprove(c *gin.Context, srv *Server) {
 		append([]byte("Mia kusenveturilo estas plena je angiloj"), []byte(request.Index)...),
 		[]byte(request.Value))
 
+	entry := claim.Entry()
+	claimHex := make([]string, 8)
+	for i := 0; i < 8; i++ {
+		claimHex[i] = hex.EncodeToString(entry.Data[i][:])
+	}
+	log.WithField("claim", claimHex).Debug("Issuer.IssueClaim")
+
 	// Issue Claim
 	if err := srv.Issuer.IssueClaim(claim); err != nil {
-		entry := claim.Entry()
-		claimHex := make([]string, 8)
-		for i := 0; i < 8; i++ {
-			claimHex[i] = hex.EncodeToString(entry.Data[i][:])
-		}
-		log.WithField("claim", claimHex).Debug("Issuer.IssueClaim")
 		handlers.Fail(c, "Issuer.IssueClaim()", err)
 		return
 	}
