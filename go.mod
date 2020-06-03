@@ -6,9 +6,9 @@ require (
 	github.com/ethereum/go-ethereum v1.9.13
 	github.com/gin-gonic/gin v1.5.0
 	github.com/gorilla/mux v1.7.4
-	github.com/iden3/go-circom-prover-verifier v0.0.0-20200522153011-ec6920aa1169
-	github.com/iden3/go-iden3-core v0.0.8-0.20200522154712-780c4e804a1a
-	github.com/iden3/go-iden3-servers v0.0.2-0.20200525092853-167fda8ae7d9
+	github.com/iden3/go-circom-prover-verifier v0.0.1
+	github.com/iden3/go-iden3-core v0.0.8
+	github.com/iden3/go-iden3-servers v0.0.2
 	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/onsi/ginkgo v1.10.1 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
